@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbs & Calories Food Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Food Nutrition Filter</h1>
+            <p>Filter foods by name, carbs, calories, and portion size</p>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="foodName">Food Name:</label>
+                <select id="foodName">
+                    <option value="">All Foods</option>
+                    <!-- Food names will be populated dynamically -->
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="carbsFilter">Carbs:</label>
+                <select id="carbsFilter">
+                    <option value="">All Carbs</option>
+                    <option value="very-low">&lt; 10g</option>
+                    <option value="low">10–20g</option>
+                    <option value="medium-low">20–30g</option>
+                    <option value="medium">30–40g</option>
+                    <option value="medium-high">40–50g</option>
+                    <option value="high">&gt; 50g</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="caloriesFilter">Calories:</label>
+                <select id="caloriesFilter">
+                    <option value="">All Calories</option>
+                    <option value="low">&lt; 200 kcal</option>
+                    <option value="medium">200–500 kcal</option>
+                    <option value="high">&gt; 500 kcal</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="categoryFilter">Food Category:</label>
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <!-- Categories will be populated dynamically -->
+                </select>
+            </div>
+        </div>
+
+        <div class="max-carbs-section">
+            <div class="max-carbs-input">
+                <label for="maxCarbsInput">Max Carbs (Keto):</label>
+                <input type="number" id="maxCarbsInput" placeholder="Enter max daily carbs (g)" min="0" step="1">
+                <span class="input-helper">grams per day</span>
+            </div>
+        </div>
+
+        <div class="results">
+            <h2>Results</h2>
+            <div id="resultsContainer">
+                <!-- Filtered results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
