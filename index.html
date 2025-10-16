@@ -44,13 +44,13 @@
                     <option value="high">&gt; 500 kcal</option>
                 </select>
             </div>
+        </div>
 
-            <div class="filter-group">
-                <label for="categoryFilter">Food Category:</label>
-                <select id="categoryFilter">
-                    <option value="">All Categories</option>
-                    <!-- Categories will be populated dynamically -->
-                </select>
+        <div class="search-section">
+            <div class="search-input">
+                <label for="searchInput">Search Foods:</label>
+                <input type="text" id="searchInput" placeholder="Enter food name to search (minimum 3 characters)" minlength="3">
+                <span class="input-helper">Type at least 3 characters to search</span>
             </div>
         </div>
 
@@ -63,7 +63,7 @@
         </div>
 
         <div class="results">
-            <h2>Results</h2>
+            <h2>Results (per 100g)</h2>
             <div id="resultsContainer">
                 <!-- Filtered results will be displayed here -->
             </div>

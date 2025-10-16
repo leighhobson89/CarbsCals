@@ -6,7 +6,7 @@ let maxDailyCarbs = null;
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Load food data from JSON file
+    // Load food data from CSV file
     loadFoodData();
 
     // Set up event listeners for all filter dropdowns
@@ -14,18 +14,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * Load food data from foods.json file using fetch API
+ * Load food data from CSV file using fetch API
  */
 function loadFoodData() {
-    fetch('data/foods.json')
+    fetch('data/foodData.csv')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return response.json();
+            return response.text();
         })
-        .then(data => {
-            allFoods = data;
+        .then(csvText => {
+            allFoods = parseCSVToFoods(csvText);
             // Populate dropdowns once data is loaded
             populateDropdowns();
             // Display all foods initially
@@ -46,17 +46,8 @@ function populateDropdowns() {
     // Get unique food names and sort them alphabetically
     const foodNames = [...new Set(allFoods.map(food => food.name))].sort();
 
-    // Get unique categories and sort them alphabetically
-    const categories = [...new Set(allFoods.map(food => food.category))].sort();
-
-    // Populate category dropdown
-    const categorySelect = document.getElementById('categoryFilter');
-    categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category.charAt(0).toUpperCase() + category.slice(1); // Capitalize first letter
-        categorySelect.appendChild(option);
-    });
+    // Note: Categories are not populated since CSV data doesn't include category information
+    // All foods are assigned a default category
 
     // Populate food name dropdown
     const foodNameSelect = document.getElementById('foodName');
@@ -76,7 +67,18 @@ function setupEventListeners() {
     document.getElementById('foodName').addEventListener('change', filterFoods);
     document.getElementById('carbsFilter').addEventListener('change', filterFoods);
     document.getElementById('caloriesFilter').addEventListener('change', filterFoods);
-    document.getElementById('categoryFilter').addEventListener('change', filterFoods);
+
+    // Add event listener for search input
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+        // Only filter if search term has 3 or more characters
+        if (searchInput.value.length >= 3) {
+            filterFoods();
+        } else if (searchInput.value.length === 0) {
+            // If search is cleared, also refilter
+            filterFoods();
+        }
+    });
 
     // Add event listeners for max carbs input
     const maxCarbsInput = document.getElementById('maxCarbsInput');
@@ -89,14 +91,14 @@ function setupEventListeners() {
 }
 
 /**
- * Filter foods based on current dropdown selections and display results
+ * Filter foods based on current dropdown selections and search input, then display results
  */
 function filterFoods() {
     // Get current filter values
     const selectedFoodName = document.getElementById('foodName').value;
     const selectedCarbsFilter = document.getElementById('carbsFilter').value;
     const selectedCaloriesFilter = document.getElementById('caloriesFilter').value;
-    const selectedCategory = document.getElementById('categoryFilter').value;
+    const searchTerm = document.getElementById('searchInput').value.trim();
 
     // Start with all foods and apply filters progressively
     let filteredFoods = allFoods;
@@ -144,9 +146,12 @@ function filterFoods() {
         });
     }
 
-    // Filter by category (exact match)
-    if (selectedCategory) {
-        filteredFoods = filteredFoods.filter(food => food.category === selectedCategory);
+    // Filter by search term (only if 3 or more characters)
+    if (searchTerm.length >= 3) {
+        const searchLower = searchTerm.toLowerCase();
+        filteredFoods = filteredFoods.filter(food =>
+            food.name.toLowerCase().includes(searchLower)
+        );
     }
 
     // Display the filtered results
@@ -162,6 +167,11 @@ function filterFoods() {
  */
 function displayFoods(foods) {
     const resultsContainer = document.getElementById('resultsContainer');
+
+    if (!resultsContainer) {
+        console.error('Results container not found!');
+        return;
+    }
 
     // Clear previous results
     resultsContainer.innerHTML = '';
@@ -199,10 +209,6 @@ function displayFoods(foods) {
                 <div class="food-info-item">
                     <span class="food-info-label">Protein:</span>
                     <span class="food-info-value">${food.protein}g</span>
-                </div>
-                <div class="food-info-item">
-                    <span class="food-info-label">Category:</span>
-                    <span class="food-info-value">${food.category.charAt(0).toUpperCase() + food.category.slice(1)}</span>
                 </div>
             </div>
         `;
@@ -308,7 +314,7 @@ function updateMaxDailyCarbs() {
     }
 
     maxDailyCarbs = numericValue;
-    console.log(`Max daily carbs set to: ${maxDailyCarbs}g`);
+    console.log(`Max daily carbs set to: ${maxDailyCarbs}`);
 
     // Color existing cards based on the new keto limit
     colorFoodCardsBasedOnKeto();
@@ -328,4 +334,79 @@ function displayError(message) {
             <strong>Error:</strong> ${message}
         </div>
     `;
+}
+
+/**
+ * Parse CSV data and convert it to food objects
+ * @param {string} csvText - Raw CSV text to parse
+ * @returns {Array} - Array of food objects
+ */
+function parseCSVToFoods(csvText) {
+    // Handle both Windows (CR LF) and Unix (LF) line endings
+    const lines = csvText.split(/\r?\n/);
+
+    const foods = [];
+
+    // Skip header lines (first 3 lines are headers/metadata)
+    for (let i = 3; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue; // Skip empty lines
+
+        // Parse CSV line properly handling quoted fields
+        const fields = parseCSVLine(line);
+
+        if (fields.length >= 5) {
+            const food = {
+                name: fields[0].replace(/"/g, '').trim(),
+                protein: (fields[1] === 'Tr' || fields[1] === 'N') ? 0.1 : (parseFloat(fields[1]) || 0),
+                fat: (fields[2] === 'Tr' || fields[2] === 'N') ? 0.1 : (parseFloat(fields[2]) || 0),
+                carbs: (fields[3] === 'Tr' || fields[3] === 'N') ? 0.1 : (parseFloat(fields[3]) || 0),
+                calories: parseInt(fields[4]) || 0
+            };
+
+            // Only add if we have valid numeric data
+            if (food.name && (food.protein > 0 || food.fat > 0 || food.carbs > 0 || food.calories > 0)) {
+                foods.push(food);
+            }
+        }
+    }
+
+    return foods;
+}
+
+/**
+ * Parse a single CSV line handling quoted fields properly
+ * @param {string} line - CSV line to parse
+ * @returns {Array} - Array of field values
+ */
+function parseCSVLine(line) {
+    const fields = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+
+        if (char === '"') {
+            if (inQuotes && line[i + 1] === '"') {
+                // Escaped quote
+                current += '"';
+                i++; // Skip next quote
+            } else {
+                // Toggle quote mode
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            // Field separator outside quotes
+            fields.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+
+    // Add the last field
+    fields.push(current);
+
+    return fields;
 }

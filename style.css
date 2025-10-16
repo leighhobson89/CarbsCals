@@ -124,15 +124,59 @@ header p {
     font-style: italic;
 }
 
-/* Responsive adjustments for max carbs section */
+/* Search section */
+.search-section {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.search-input {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+.search-input label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.search-input input {
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 300px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.search-input .input-helper {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Responsive adjustments for search section */
 @media (max-width: 768px) {
-    .max-carbs-input {
+    .search-input {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
     }
 
-    .max-carbs-input input {
+    .search-input input {
         width: 100%;
     }
 }
