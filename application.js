@@ -87,6 +87,11 @@ function setupEventListeners() {
         filterFoods();
     });
 
+    // Add event listener for theme dropdown
+    document.getElementById('themeSelect').addEventListener('change', function() {
+        document.documentElement.setAttribute('data-theme', this.value);
+    });
+
     // Add event listener for search input
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', function() {
