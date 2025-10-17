@@ -46,8 +46,8 @@ function populateDropdowns() {
     // Get unique food names and sort them alphabetically
     const foodNames = [...new Set(allFoods.map(food => food.name))].sort();
 
-    // Note: Categories are not populated since CSV data doesn't include category information
-    // All foods are assigned a default category
+    // Get unique categories and sort them alphabetically
+    const categories = [...new Set(allFoods.map(food => food.category))].sort();
 
     // Populate food name dropdown
     const foodNameSelect = document.getElementById('foodName');
@@ -56,6 +56,15 @@ function populateDropdowns() {
         option.value = name;
         option.textContent = name;
         foodNameSelect.appendChild(option);
+    });
+
+    // Populate category dropdown
+    const categorySelect = document.getElementById('categoryFilter');
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
     });
 }
 
@@ -67,6 +76,7 @@ function setupEventListeners() {
     document.getElementById('foodName').addEventListener('change', filterFoods);
     document.getElementById('carbsFilter').addEventListener('change', filterFoods);
     document.getElementById('caloriesFilter').addEventListener('change', filterFoods);
+    document.getElementById('categoryFilter').addEventListener('change', filterFoods);
 
     // Add event listener for search input
     const searchInput = document.getElementById('searchInput');
@@ -98,6 +108,7 @@ function filterFoods() {
     const selectedFoodName = document.getElementById('foodName').value;
     const selectedCarbsFilter = document.getElementById('carbsFilter').value;
     const selectedCaloriesFilter = document.getElementById('caloriesFilter').value;
+    const selectedCategoryFilter = document.getElementById('categoryFilter').value;
     const searchTerm = document.getElementById('searchInput').value.trim();
 
     // Start with all foods and apply filters progressively
@@ -144,6 +155,11 @@ function filterFoods() {
                     return true;
             }
         });
+    }
+
+    // Filter by category (exact match)
+    if (selectedCategoryFilter) {
+        filteredFoods = filteredFoods.filter(food => food.category === selectedCategoryFilter);
     }
 
     // Filter by search term (only if 3 or more characters)
@@ -355,13 +371,14 @@ function parseCSVToFoods(csvText) {
         // Parse CSV line properly handling quoted fields
         const fields = parseCSVLine(line);
 
-        if (fields.length >= 5) {
+        if (fields.length >= 9) { // Ensure we have at least 9 fields (including category)
             const food = {
                 name: fields[0].replace(/"/g, '').trim(),
                 protein: (fields[1] === 'Tr' || fields[1] === 'N') ? 0.1 : (parseFloat(fields[1]) || 0),
                 fat: (fields[2] === 'Tr' || fields[2] === 'N') ? 0.1 : (parseFloat(fields[2]) || 0),
                 carbs: (fields[3] === 'Tr' || fields[3] === 'N') ? 0.1 : (parseFloat(fields[3]) || 0),
-                calories: parseInt(fields[4]) || 0
+                calories: parseInt(fields[4]) || 0,
+                category: fields[8].replace(/"/g, '').trim() // Extract category from the last field
             };
 
             // Only add if we have valid numeric data
