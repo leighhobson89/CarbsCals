@@ -298,6 +298,107 @@ header h1 {
     font-style: italic;
 }
 
+/* Shopping list section */
+.shopping-list-section {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: var(--filter-bg);
+    border-radius: 8px;
+    border: 1px solid var(--filter-border);
+}
+
+.shopping-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.shopping-list-section h2 {
+    color: var(--header-color);
+    margin: 0;
+    font-size: 1.5rem;
+    text-align: left;
+}
+
+.shopping-list-totals {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.total-item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.total-label {
+    color: var(--label-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.total-value {
+    color: var(--button-bg);
+    font-weight: 500;
+    font-size: 0.9rem;
+    min-width: 60px;
+}
+
+.shopping-list-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#resetShoppingListBtn {
+    padding: 10px 20px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#resetShoppingListBtn:hover {
+    background-color: #0056b3;
+}
+
+.shopping-list-item {
+    padding: 8px 0;
+    color: var(--text-color);
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.shopping-list-item:last-child {
+    border-bottom: none;
+}
+
+.shopping-list-item-name {
+    flex-grow: 1;
+}
+
+.shopping-list-item-qty {
+    color: var(--button-bg);
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.shopping-list-empty {
+    text-align: center;
+    color: var(--helper-color);
+    font-style: italic;
+    padding: 20px;
+}
+
 /* Responsive adjustments for search section */
 @media (max-width: 768px) {
     .search-input {
@@ -364,7 +465,71 @@ header h1 {
 }
 
 /* Individual result card */
+/* Add to shopping list button */
+.add-to-shopping-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+.add-to-shopping-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+/* Remove from shopping list button */
+.remove-from-shopping-btn {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, cursor 0.3s ease;
+    z-index: 10;
+    opacity: 0.5;
+}
+
+.remove-from-shopping-btn.enabled {
+    background-color: var(--button-bg);
+    cursor: pointer;
+    opacity: 1;
+}
+
+.remove-from-shopping-btn.enabled:hover {
+    background-color: #dc3545;
+    transform: scale(1.1);
+}
+
+.remove-from-shopping-btn.enabled:active {
+    transform: scale(0.95);
+}
+
 .food-card {
+    position: relative;
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 8px;
@@ -488,6 +653,16 @@ header h1 {
 
     .food-card {
         padding: 15px;
+    }
+
+    .shopping-list-totals {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .total-item {
+        gap: 5px;
     }
 }
 
