@@ -254,6 +254,7 @@ function displayFoods(foods) {
         // Create the food card HTML structure
         foodCard.innerHTML = `
             <h3>${food.name}</h3>
+            <p class="food-category">${food.category}</p>
             <div class="food-info">
                 <div class="food-info-item">
                     <span class="food-info-label">Carbs:</span>
@@ -270,6 +271,10 @@ function displayFoods(foods) {
                 <div class="food-info-item">
                     <span class="food-info-label">Protein:</span>
                     <span class="food-info-value">${food.protein}g</span>
+                </div>
+                <div class="food-info-item">
+                    <span class="food-info-label">Cholesterol:</span>
+                    <span class="food-info-value">${food.cholesterol}mg</span>
                 </div>
             </div>
         `;
@@ -423,7 +428,8 @@ function parseCSVToFoods(csvText) {
                 fat: (fields[2] === 'Tr' || fields[2] === 'N') ? 0.1 : (parseFloat(fields[2]) || 0),
                 carbs: (fields[3] === 'Tr' || fields[3] === 'N') ? 0.1 : (parseFloat(fields[3]) || 0),
                 calories: parseInt(fields[4]) || 0,
-                category: fields[8].replace(/"/g, '').trim() // Extract category from the last field
+                category: fields[8].replace(/"/g, '').trim(),
+                cholesterol: (fields[7] === 'Tr' || fields[7] === 'N') ? 0.1 : (parseFloat(fields[7]) || 0)
             };
 
             // Only add if we have valid numeric data

@@ -22,7 +22,7 @@
     --card-bg: #2c2c2c;
     --card-border: #444;
     --card-hover: rgba(255, 255, 255, 0.1);
-    --label-color: #b0b0b0;
+    --label-color: #ffffff;
     --helper-color: #888;
     --no-results-bg: #2c2c2c;
     --no-results-border: #444;
@@ -379,10 +379,18 @@ header h1 {
 
 .food-card h3 {
     color: var(--header-color);
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     font-size: 1.3rem;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 8px;
+}
+
+.food-category {
+    color: var(--label-color);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .food-info {
