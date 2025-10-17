@@ -71,7 +71,21 @@
         </div>
 
         <div class="results">
-            <h2>Results (per 100g)</h2>
+            <div class="results-header">
+                <h2>Results (per 100g)</h2>
+                <div class="sort-controls">
+                    <label for="sortBy">Sort By:</label>
+                    <select id="sortBy">
+                        <option value="alphabetical">Alphabetical</option>
+                        <option value="carbs-high-low">Carbs (High -> Low)</option>
+                        <option value="carbs-low-high">Carbs (Low -> High)</option>
+                        <option value="calories-high-low">Calories (High -> Low)</option>
+                        <option value="calories-low-high">Calories (Low->High)</option>
+                        <option value="fat-high-low">Fat (High->Low)</option>
+                        <option value="fat-low-high">Fat (Low->High)</option>
+                    </select>
+                </div>
+            </div>
             <div id="resultsContainer">
                 <!-- Filtered results will be displayed here -->
             </div>

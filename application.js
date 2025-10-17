@@ -4,6 +4,9 @@ let allFoods = [];
 // Global variable to store max daily carbs for keto
 let maxDailyCarbs = null;
 
+// Global variable to store the current sort option
+let currentSortOption = 'alphabetical';
+
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Load food data from CSV file
@@ -77,6 +80,12 @@ function setupEventListeners() {
     document.getElementById('carbsFilter').addEventListener('change', filterFoods);
     document.getElementById('caloriesFilter').addEventListener('change', filterFoods);
     document.getElementById('categoryFilter').addEventListener('change', filterFoods);
+
+    // Add event listener for sort dropdown
+    document.getElementById('sortBy').addEventListener('change', function() {
+        currentSortOption = this.value;
+        filterFoods();
+    });
 
     // Add event listener for search input
     const searchInput = document.getElementById('searchInput');
@@ -170,11 +179,42 @@ function filterFoods() {
         );
     }
 
-    // Display the filtered results
+    // Sort the filtered results
+    sortFoods(filteredFoods, currentSortOption);
+
+    // Display the filtered and sorted results
     displayFoods(filteredFoods);
 
     // Color the displayed cards based on keto limits
     colorFoodCardsBasedOnKeto();
+}
+
+/**
+ * Sort the foods array based on the specified sort option
+ * @param {Array} foods - Array of food objects to sort
+ * @param {string} sortOption - The sort option ('alphabetical', 'carbs-high-low', etc.)
+ */
+function sortFoods(foods, sortOption) {
+    foods.sort((a, b) => {
+        switch (sortOption) {
+            case 'alphabetical':
+                return a.name.localeCompare(b.name);
+            case 'carbs-high-low':
+                return b.carbs - a.carbs;
+            case 'carbs-low-high':
+                return a.carbs - b.carbs;
+            case 'calories-high-low':
+                return b.calories - a.calories;
+            case 'calories-low-high':
+                return a.calories - b.calories;
+            case 'fat-high-low':
+                return b.fat - a.fat;
+            case 'fat-low-high':
+                return a.fat - b.fat;
+            default:
+                return 0;
+        }
+    });
 }
 
 /**

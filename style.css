@@ -183,10 +183,46 @@ header p {
 
 .results h2 {
     color: #2c3e50;
-    margin-bottom: 20px;
+    margin: 0;
     font-size: 1.8rem;
     border-bottom: 2px solid #e9ecef;
     padding-bottom: 10px;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-controls label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.sort-controls select {
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background-color: white;
+    transition: border-color 0.3s ease;
+    cursor: pointer;
+}
+
+.sort-controls select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 /* Results container */
