@@ -7,8 +7,8 @@ let maxDailyCarbs = null;
 // Global variable to store the current sort option
 let currentSortOption = 'alphabetical';
 
-// Global variable to store shopping list items with quantities
-let shoppingList = {}; // { "foodName": quantity }
+// Global variable to store shopping list items with quantities and multipliers
+let shoppingList = {}; // { "foodName": { count: number, multiplier: number } }
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -262,6 +262,10 @@ function displayFoods(foods) {
 
         // Create the food card HTML structure
         foodCard.innerHTML = `
+            <div class="quantity-input-container">
+                <input type="number" class="quantity-input" data-food-name="${food.name}" value="100" min="1" step="1">
+                <label class="quantity-label">g</label>
+            </div>
             <button class="remove-from-shopping-btn ${shoppingList[food.name] ? 'enabled' : ''}" data-food-name="${food.name}">-</button>
             <button class="add-to-shopping-btn" data-food-name="${food.name}">+</button>
             <h3>${food.name}</h3>
@@ -293,13 +297,30 @@ function displayFoods(foods) {
         // Add click event listener to the + button
         const addButton = foodCard.querySelector('.add-to-shopping-btn');
         addButton.addEventListener('click', function() {
-            addToShoppingList(food);
+            const quantityInput = foodCard.querySelector('.quantity-input');
+            const quantityValue = parseInt(quantityInput.value, 10) || 100;
+            const multiplier = quantityValue / 100; // Convert to decimal multiplier
+            addToShoppingList(food, multiplier);
         });
 
         // Add click event listener to the - button
         const removeButton = foodCard.querySelector('.remove-from-shopping-btn');
         removeButton.addEventListener('click', function() {
-            removeFromShoppingList(food);
+            const quantityInput = foodCard.querySelector('.quantity-input');
+            const quantityValue = parseInt(quantityInput.value, 10) || 100;
+            const multiplier = quantityValue / 100; // Convert to decimal multiplier
+            removeFromShoppingList(food, multiplier);
+        });
+
+        // Add event listener for quantity input changes to update existing items
+        const quantityInput = foodCard.querySelector('.quantity-input');
+        quantityInput.addEventListener('change', function() {
+            if (shoppingList[food.name]) {
+                const quantityValue = parseInt(this.value, 10) || 100;
+                const multiplier = quantityValue / 100;
+                shoppingList[food.name].multiplier = multiplier;
+                updateTotals(); // Recalculate totals with new multiplier
+            }
         });
 
         resultsContainer.appendChild(foodCard);
@@ -317,7 +338,7 @@ function refreshButtonStates() {
         const removeButton = card.querySelector('.remove-from-shopping-btn');
 
         if (removeButton) {
-            if (shoppingList[foodName] && shoppingList[foodName] > 0) {
+            if (shoppingList[foodName] && shoppingList[foodName].count > 0) {
                 removeButton.classList.add('enabled');
             } else {
                 removeButton.classList.remove('enabled');
@@ -525,30 +546,36 @@ function parseCSVLine(line) {
 /**
  * Add a food item to the shopping list (or increment quantity if already present)
  * @param {Object} food - The food object to add
+ * @param {number} multiplier - The multiplier to apply to nutritional values (e.g., 1.0 for 100%)
  */
-function addToShoppingList(food) {
-    // Increment quantity if item already exists, otherwise set to 1
+function addToShoppingList(food, multiplier = 1.0) {
+    // Initialize or update the shopping list entry
     if (shoppingList[food.name]) {
-        shoppingList[food.name]++;
+        shoppingList[food.name].count++;
+        shoppingList[food.name].multiplier = multiplier; // Update multiplier in case it changed
     } else {
-        shoppingList[food.name] = 1;
+        shoppingList[food.name] = {
+            count: 1,
+            multiplier: multiplier
+        };
     }
 
     // Update the display and totals
     displayShoppingList();
     updateTotals();
     refreshButtonStates();
-    console.log(`Added ${food.name} to shopping list (quantity: ${shoppingList[food.name]})`);
+    console.log(`Added ${food.name} to shopping list (count: ${shoppingList[food.name].count}, multiplier: ${multiplier})`);
 }
 /**
  * Remove a food item from the shopping list (or decrement quantity if more than 1)
  * @param {Object} food - The food object to remove
+ * @param {number} multiplier - The multiplier to apply to nutritional values (e.g., 1.0 for 100%)
  */
-function removeFromShoppingList(food) {
+function removeFromShoppingList(food, multiplier = 1.0) {
     if (shoppingList[food.name]) {
-        if (shoppingList[food.name] > 1) {
-            // Decrement quantity
-            shoppingList[food.name]--;
+        if (shoppingList[food.name].count > 1) {
+            // Decrement count
+            shoppingList[food.name].count--;
         } else {
             // Remove item completely
             delete shoppingList[food.name];
@@ -570,15 +597,15 @@ function updateTotals() {
     let totalCalories = 0;
     let totalFat = 0;
 
-    // Calculate totals from shopping list items
+    // Calculate totals from shopping list items using multipliers
     Object.keys(shoppingList).forEach(foodName => {
-        const quantity = shoppingList[foodName];
+        const item = shoppingList[foodName];
         const food = allFoods.find(f => f.name === foodName);
 
         if (food) {
-            totalCarbs += food.carbs * quantity;
-            totalCalories += food.calories * quantity;
-            totalFat += food.fat * quantity;
+            totalCarbs += food.carbs * item.multiplier * item.count;
+            totalCalories += food.calories * item.multiplier * item.count;
+            totalFat += food.fat * item.multiplier * item.count;
         }
     });
 
@@ -614,10 +641,10 @@ function displayShoppingList() {
         return;
     }
 
-    // Display each shopping list item with quantity
+    // Display each shopping list item with quantity and multiplier info
     foodNames.forEach(foodName => {
-        const quantity = shoppingList[foodName];
-        if (quantity > 0) {  // Only display items with quantity > 0
+        const item = shoppingList[foodName];
+        if (item.count > 0) {  // Only display items with count > 0
             const itemDiv = document.createElement('div');
             itemDiv.className = 'shopping-list-item';
 
@@ -627,7 +654,7 @@ function displayShoppingList() {
 
             const qtySpan = document.createElement('span');
             qtySpan.className = 'shopping-list-item-qty';
-            qtySpan.textContent = `qty: ${quantity}`;
+            qtySpan.textContent = `qty: ${item.count} (${Math.round(item.multiplier * 100)}g)`;
 
             itemDiv.appendChild(nameSpan);
             itemDiv.appendChild(qtySpan);
@@ -635,7 +662,7 @@ function displayShoppingList() {
         }
     });
 
-    // If no items were displayed (all had quantity 0), show "Nothing..."
+    // If no items were displayed (all had count 0), show "Nothing..."
     if (shoppingListContainer.children.length === 0) {
         const emptyDiv = document.createElement('div');
         emptyDiv.className = 'shopping-list-empty';

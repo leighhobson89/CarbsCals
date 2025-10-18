@@ -542,12 +542,39 @@ header h1 {
     box-shadow: 0 4px 15px var(--card-hover);
 }
 
-.food-card h3 {
-    color: var(--header-color);
-    margin-bottom: 5px;
-    font-size: 1.3rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
+.quantity-input-container {
+    position: absolute;
+    top: 10px;
+    right: 90px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 10;
+}
+
+.quantity-input {
+    padding: 5px 8px;
+    border: 2px solid var(--input-border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: 60px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s ease;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.quantity-input:focus {
+    outline: none;
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.quantity-label {
+    color: var(--label-color);
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .food-category {
@@ -681,6 +708,11 @@ header h1 {
     }
 
     .food-info {
+        font-size: 0.8rem;
+    }
+
+    .quantity-input {
+        width: 50px;
         font-size: 0.8rem;
     }
 }
