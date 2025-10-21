@@ -596,6 +596,7 @@ function updateTotals() {
     let totalCarbs = 0;
     let totalCalories = 0;
     let totalFat = 0;
+    let totalCholesterol = 0;
 
     // Calculate totals from shopping list items using multipliers
     Object.keys(shoppingList).forEach(foodName => {
@@ -606,6 +607,7 @@ function updateTotals() {
             totalCarbs += food.carbs * item.multiplier * item.count;
             totalCalories += food.calories * item.multiplier * item.count;
             totalFat += food.fat * item.multiplier * item.count;
+            totalCholesterol += food.cholesterol * item.multiplier * item.count;
         }
     });
 
@@ -613,6 +615,7 @@ function updateTotals() {
     document.getElementById('totalCarbs').textContent = `${Math.round(totalCarbs)}g`;
     document.getElementById('totalCalories').textContent = `${Math.round(totalCalories)} kcal`;
     document.getElementById('totalFat').textContent = `${Math.round(totalFat)}g`;
+    document.getElementById('totalCholesterol').textContent = `${Math.round(totalCholesterol)}mg`;
 }
 
 /**
